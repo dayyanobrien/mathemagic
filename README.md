@@ -136,11 +136,6 @@ python scripts/evaluate.py --dump-prompts prompts.jsonl --shots 0 8 64
 python scripts/score.py responses.jsonl --model my-model
 ```
 
-Useful options: `--no-system-role` (for chat templates without a system role),
-`--chat-template-kwargs '{"enable_thinking": false}'`, `--max-model-len` (longer prompts are
-skipped and scored as format errors), `--reasoning-effort` / `--max-tokens-field
-max_completion_tokens` (for OpenAI reasoning models).
-
 ## Making new test sets
 
 Because test sets are generated from a seed, you can make a fresh one that has never been
