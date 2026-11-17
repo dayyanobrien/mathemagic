@@ -1,0 +1,264 @@
+SYSTEM
+You are an expert programmer specialising in code generation. Your task is to analyse a natural language reasoning chain that describes a mathematical transformation and convert it into a single, executable Python function named `solver`.
+
+USER
+Your function must adhere to these rules:
+1.  The function signature must be `def solver(problem):`.
+2.  The function should accept a string `problem` (e.g., '52 - 8') as input.
+3.  The output must be **only** the Python code for the function, with no surrounding text, explanations, or markdown fences.
+4.  If trigonometric functions or other advanced maths is needed, you must `import math`. For regular expressions, `import re`.
+5.  Use `eval()` to perform the standard arithmetic operations within the problem string.
+6.  If the reasoning output is broken or does not have a clear function, output "UNKNOWN FUNCTION".
+
+Here are examples of reasoning chains and their corresponding correct `solver` functions.
+
+---
+**EXAMPLE 1:**
+
+**REASONING:**
+1. Interpret the transformation rules: The problem is a simple subtraction operation where we need to subtract 8 from 52.
+2. Apply them step by step:
+   - Start with the number 52.
+   - Subtract 8 from 52.
+3. Justify each transformation:
+   - The operation is straightforward: 52 minus 8 equals 44. This is a basic arithmetic operation.
+4. Final Answer: \boxed{44}.
+
+**CODE:**
+def solver(problem):
+    return eval(problem)
+---
+**EXAMPLE 2:**
+
+**REASONING:**
+1. Interpret the transformation rules: The examples are multiplication problems, but none of the results match the standard product of the two numbers.
+2. Apply them step by step:
+   - Compare each example against the standard arithmetic result:
+     - 10*5 = \boxed{1} (standard product is 50)
+     - 20*2 = \boxed{5} (standard product is 40)
+     - 40*2 = \boxed{3} (standard product is 80)
+   - Look for a consistent relationship (scaling, modulo, digit sum, digit-based substitution, etc.) that explains all three outputs.
+3. Justify each transformation:
+   - In the examples, we can see that multiplication results often yield values that do not correspond to the actual product. For instance:
+     - 10*5 = \boxed{1}
+     - 20*2 = \boxed{5}
+     - 40*2 = \boxed{3}
+   - However, we do not have a direct example for 20*10. The results seem to be influenced by the digits of the numbers involved, but a consistent mathematical rule cannot be derived.
+4. Final Answer: No reliable transformation rule can be identified from the given examples, so no function can be confidently produced. \boxed{\text{UNKNOWN FUNCTION}}
+ 
+**CODE:**
+def solver(problem):
+    return None
+---
+**EXAMPLE 3:**
+
+**REASONING:**
+1. Interpret the transformation rules: From the examples, it appears the results follow a specific pattern. The transformation rule involves reducing the standard result modulo 7.
+2. Apply the transformation step by step:
+   - Calculate the standard arithmetic result: 6 * 4 = 24.
+   - Apply the transformation rule: 24 mod 7 = 3.
+3. Justify each transformation:
+   - The standard arithmetic result of 6 * 4 is 24.
+   - When 24 is divided by 7, the remainder is 3, which is the transformed result.
+4. Final Answer: \boxed{3}
+
+**CODE:**
+def solver(problem):
+    return eval(problem) % 7
+---
+**EXAMPLE 4:**
+
+**REASONING:**
+1. Interpret the transformation rules: The rule is to first compute the standard result and then add a constant value of 10 to it.
+2. Apply the transformation step by step:
+   - The problem is '5 * 5'.
+   - The standard result is 25.
+   - Add the constant: 25 + 10 = 35.
+3. Justify each transformation:
+   - This rule directly matches the standard arithmetic result with a fixed offset, so no further transformation beyond adding the constant is required.
+4. Final Answer: \boxed{35}
+
+**CODE:**
+def solver(problem):
+    return eval(problem) + 10
+---
+**EXAMPLE 5:**
+
+**REASONING:**
+1. Interpret the transformation rules: The core rule is that all numbers in the expression have their digits reversed before the calculation. For example, 123 becomes 321.
+2. Apply the transformation step by step:
+   - The problem is '21 + 53'.
+   - Reverse the digits of '21' to get '12'.
+   - Reverse the digits of '53' to get '35'.
+   - The new problem is '12 + 35', which equals 47.
+   - This final answer also needs to be reversed so it can be interpreted correctly.
+3. Justify each transformation:
+   - Reversing the digits of each operand before evaluating the arithmetic, then reversing the digits of the final result, produces an answer consistent with the given transformation rule.
+4. Final Answer: \boxed{74}
+
+**CODE:**
+import re
+
+def solver(problem):
+    def coerce_number_str(s):
+        try:
+            if '.' in s:
+                return float(s)
+            return int(s)
+        except ValueError:
+            return s
+
+    def reverse_place_values(match):
+        num_str = match.group(0)
+        negative = num_str.startswith('-')
+        if negative:
+            num_str = num_str[1:]
+        if '.' in num_str:
+            int_part, dec_part = num_str.split('.')
+            reversed_int = int_part[::-1].lstrip('0') or '0'
+            result = reversed_int + '.' + dec_part
+        else:
+            result = num_str[::-1].lstrip('0') or '0'
+        if negative:
+            result = '-' + result
+        return result
+
+    def apply_place_value_reversal_to_result(result):
+        coerced = coerce_number_str(str(result))
+        s = str(coerced)
+        negative = s.startswith('-')
+        if negative:
+            s = s[1:]
+        if '.' in s:
+            int_part, dec_part = s.split('.', 1)
+            core = int_part[::-1] + '.' + dec_part
+        else:
+            core = s[::-1].lstrip('0') or '0'
+        if negative:
+            core = '-' + core
+        return coerce_number_str(core)
+
+    transformed_problem = re.sub(r'-?\d+(\.\d+)?', reverse_place_values, problem)
+    result = eval(transformed_problem)
+    return apply_place_value_reversal_to_result(result)
+---
+**EXAMPLE 6:**
+
+**REASONING:**
+1. Interpret the transformation rules: Before any calculation, every instance of the digit '4' is replaced with the digit '9', and every '9' is replaced with a '4'.
+2. Apply the transformation step by step:
+   - The problem is '40 * 9'.
+   - Swap the digits: '40' becomes '90', and '9' becomes '4'.
+   - The new problem is '90 * 4', which equals 360.
+3. Justify each transformation:
+   - Swapping the digits '4' and '9' before evaluating ensures the substitution is applied consistently to both numbers in the expression before the operation is performed.
+4. Final Answer: \boxed{360}
+
+**CODE:**
+def solver(problem):
+    temp_placeholder = "___TEMP___"
+    problem = problem.replace('4', temp_placeholder)
+    problem = problem.replace('9', '4')
+    problem = problem.replace(temp_placeholder, '9')
+    return eval(problem)
+---
+**EXAMPLE 7:**
+
+**REASONING:**
+1. Interpret the transformation rules: All numbers in the problem should be interpreted as base-8 (octal) numbers. They must be converted to base-10 before the operation is performed.
+2. Apply the transformation step by step:
+   - The problem is '10 + 10'.
+   - Convert '10' from base-8 to base-10, which is 8.
+   - The new problem is '8 + 8', which equals 16.
+3. Justify each transformation:
+   - Since the numbers are meant to be interpreted in base 8, converting each one to base 10 before performing the arithmetic ensures the operation is carried out correctly.
+4. Final Answer: \boxed{16}
+
+**CODE:**
+import re
+
+def solver(problem):
+    def from_base_8(match):
+        return str(int(match.group(0), 8))
+    transformed_problem = re.sub(r'\d+', from_base_8, problem)
+    return eval(transformed_problem)
+---
+**EXAMPLE 8:**
+
+**REASONING:**
+1. Interpret the transformation rules: The digits of each number in the expression are rotated to the right by one position. For example, 789 becomes 978.
+2. Apply the transformation step by step:
+   - The problem is '123 + 5'.
+   - Rotate '123' to get '312'. '5' remains '5'.
+   - The new problem is '312 + 5', which equals 317.
+3. Justify each transformation:
+   - Rotating each number's digits to the right by one position before evaluating captures the described pattern, while single-digit numbers remain unchanged since there is nothing to rotate.
+4. Final Answer: \boxed{317}
+
+**CODE:**
+import re
+
+def solver(problem):
+    def rotate_num(match):
+        num_str = match.group(0)
+        if len(num_str) > 1:
+            return num_str[-1] + num_str[:-1]
+        return num_str
+    transformed_problem = re.sub(r'\d+', rotate_num, problem)
+    return eval(transformed_problem)
+---
+**EXAMPLE 9:**
+
+**REASONING:**
+1. Interpret the transformation rules: The symbols for addition and multiplication have been swapped. '+' now means multiply, and '*' now means add.
+2. Apply the transformation step by step:
+   - The problem is '10 + 5'.
+   - Replace the '+' symbol with a '*' symbol.
+   - The new problem is '10 * 5', which equals 50.
+3. Justify each transformation:
+   - Swapping the '+' and '*' operators before evaluation ensures the expression is computed using the intended, swapped operation rather than the literal symbol shown.
+4. Final Answer: \boxed{50}
+
+**CODE:**
+def solver(problem):
+    problem = problem.replace('+', '__ADD__').replace('*', '__MUL__')
+    problem = problem.replace('__ADD__', '*').replace('__MUL__', '+')
+    return eval(problem)
+---
+**EXAMPLE 10:**
+
+**REASONING:**
+1. Interpret the transformation rules: The rule is to calculate the standard result and then multiply it by -1.
+2. Apply the transformation step by step:
+   - The problem is '100 - 40'.
+   - The standard result is 60.
+   - Negate the result: 60 * -1 = -60.
+3. Justify each transformation:
+   - Computing the standard arithmetic result first and then negating it directly matches the described rule of multiplying the final answer by -1.
+4. Final Answer: \boxed{-60}
+
+**CODE:**
+def solver(problem):
+    return -eval(problem)
+---
+**EXAMPLE 11: Trigonometric Substitution**
+
+**REASONING:**
+1. Interpret the transformation rules: The first number in the expression is always replaced by the value of sin(30 degrees).
+2. Apply the transformation step by step:
+   - The problem is '99 * 10'.
+   - The value of sin(30 degrees) is 0.5.
+   - Replace '99' with '0.5'.
+   - The new problem is '0.5 * 10', which equals 5.0.
+3. Justify each transformation:
+   - Replacing only the first number in the expression with sin(30°) = 0.5, and leaving all subsequent numbers unchanged, matches the described substitution rule.
+4. Final Answer: \boxed{5.0}
+
+**CODE:**
+import re
+import math
+
+def solver(problem):
+    replacement_val = math.sin(math.radians(30))
+    transformed_problem = re.sub(r'\b\d+\.?\d*\b', str(replacement_val), problem, 1)
+    return eval(transformed_problem)

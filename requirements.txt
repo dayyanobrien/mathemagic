@@ -1,0 +1,11 @@
+# Core (generate data, build prompts, score)
+datasets>=2.14
+pandas>=1.5
+tqdm
+
+# Evaluation backends (install what you use)
+openai>=1.0        # --backend openai (any OpenAI-compatible API)
+# vllm>=0.6        # --backend vllm (local GPU inference)
+
+# Verifier (Section 4.3)
+# google-genai     # verifier/generate_solvers.py
