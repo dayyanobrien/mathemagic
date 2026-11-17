@@ -153,7 +153,7 @@ come from the GSM8K test split, and in-context examples from the train split.
 To add a transformation, add a branch to `transform_expression` and a hint sentence to
 `transforms_to_prompt` in `mathemagic/transforms.py`.
 
-## Verifier (Section 4.3)
+## Verifier
 
 Several rules can explain the same few examples, so a response can be "wrong" while still
 following a valid rule. To check for this, the verifier:
@@ -173,29 +173,7 @@ python verifier/check_solvers.py   results/<model>/benchmark/details.jsonl --sol
 
 `check_solvers.py` executes model-generated code. Run it in a sandbox if that is a concern.
 
-## Noise ablation
-
-Do models fail at induction because they treat the counterfactual examples as noise and fall
-back to ordinary maths? In this ablation, every in-context example applies a *different*
-transformation with its own parameter.
-
-`data/noise_ablation/seed_42.jsonl` has 405 questions with 64 examples each, in the same
-format as the benchmark. `answer` is `null`, because there is no correct answer, and each
-example records the transformation and seed that produced it. Prompts are built exactly as
-in the inductive setting.
-
-```bash
-# 8 and 64 shots by default
-python scripts/evaluate.py --model Qwen/Qwen2.5-14B-Instruct --data noise_ablation
-# The benchmark at the same shot counts, for comparison
-python scripts/evaluate.py --model Qwen/Qwen2.5-14B-Instruct --shots 8 64
-
-python scripts/noise_ablation_report.py \
-    --noise results/Qwen_Qwen2.5-14B-Instruct/noise_ablation/details.jsonl \
-    --benchmark results/Qwen_Qwen2.5-14B-Instruct/benchmark/details.jsonl
-```
-
-## Fine-tuning data (Section 4.8)
+## Fine-tuning
 
 `data/finetune/` contains the 8-shot splits used in the paper. Each dataset has 2,500 train
 and 625 test items, and the two splits share no expressions:
