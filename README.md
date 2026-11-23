@@ -5,8 +5,7 @@ MatheMagic changes the rules of arithmetic: `+` might mean multiplication, digit
 swapped, every answer might be shifted by a constant. Expressions come from GSM8K, and every
 answer can still be checked automatically. A model has to work out the new rule from
 in-context examples (**inductive** setting) or apply a rule that is described to it
-(**deductive** setting). Test sets are generated from a random seed, so you can reproduce the
-paper's sets exactly or make fresh ones that no model has seen.
+(**deductive** setting). Test sets are generated from a random seed.
 
 ## Contents
 
