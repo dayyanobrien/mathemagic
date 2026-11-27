@@ -188,11 +188,6 @@ Each line has chat `messages` ready for supervised fine-tuning. It also has
 python scripts/generate_finetune_data.py --out-dir data/finetune_new --seed 0
 ```
 
-## License
-
-Code and data are released under the [MIT License](LICENSE). The base expressions come from
-[GSM8K](https://github.com/openai/grade-school-math) (MIT License, Copyright (c) 2021 OpenAI).
-
 ## Citation
 
 If you use MatheMagic, please cite:
